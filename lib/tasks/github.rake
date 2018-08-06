@@ -35,18 +35,25 @@ namespace :github do
                                     })
     while (repos)
       next_repo_page = client.last_response.rels[:next]
-      p "#{repos.count} repos fetched. Saving to database."
+      puts "\n#{repos.count} repos fetched. Saving to database."
       repos.each do |repo|
         owner = begin
           client.user(repo.id).name
         rescue
           'unknown'
         end
+
+        num_stars = begin
+          client.repository(repo.full_name).watchers_count
+        rescue # repo blocked
+          next
+        end
+
         Project.new({
                         name: repo.full_name,
                         owner: owner,
                         url: repo.html_url,
-                        num_stars: client.repository(repo.full_name).watchers_count}).save
+                        num_stars: num_stars}).save
       end
       repos = next_repo_page ? next_repo_page.get.data : nil
     end
