@@ -23,7 +23,6 @@ namespace :github do
     end
 
     client = Octokit::Client.new(access_token: token)
-    # client.auto_paginate = true
     p "Fetching repos..."
     repos = client.all_repositories({
                                         pushed: ">#{DateTime.now - 1.day}",
@@ -34,13 +33,22 @@ namespace :github do
                                         sort: 'stars',
                                         order: 'desc'
                                     })
-    p "#{repos.count} repos fetched. Saving to database."
-    repos.each do |repo|
-      Project.new({
-                      name: repo.full_name,
-                      owner: client.user(repo.id).name,
-                      url: repo.html_url,
-                      num_stars: client.repository(repo.full_name).watchers_count}).save
+    while (repos)
+      next_repo_page = client.last_response.rels[:next]
+      p "#{repos.count} repos fetched. Saving to database."
+      repos.each do |repo|
+        owner = begin
+          client.user(repo.id).name
+        rescue
+          'unknown'
+        end
+        Project.new({
+                        name: repo.full_name,
+                        owner: owner,
+                        url: repo.html_url,
+                        num_stars: client.repository(repo.full_name).watchers_count}).save
+      end
+      repos = next_repo_page ? next_repo_page.get.data : nil
     end
   end
 end

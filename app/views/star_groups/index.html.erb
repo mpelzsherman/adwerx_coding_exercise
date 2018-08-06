@@ -1,0 +1,21 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Star Groups</h1>
+
+<table>
+  <thead>
+  <tr>
+    <th>Stars</th>
+    <th>Count</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <% @star_groups.each do |stargroup| %>
+    <tr>
+      <td><%= stargroup[0] %></td>
+      <td><%= stargroup[1] %></td>
+    </tr>
+  <% end %>
+  </tbody>
+</table>
