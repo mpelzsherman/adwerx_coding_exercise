@@ -51,3 +51,11 @@ To optimize performance, I would look at doing MySQL bulk inserts.
 Note that I've "memoized" @star_groups in app/controllers/star_groups_controller.rb to avoid executing the query on every page request.
 Since that data doesn't change, there's no need to re-run the query.
 
+### Testing
+
+I'm not a fan of the tests created by the Rails generators, because they're mostly just testing Rails.
+Unit tests should interact with external services as little as possible.
+I would focus on the key behaviors, in this case generating the github API query, saving projects to the DB, and generating the query for display.
+It would take some digging to see if the octokit API provides some way to get the query it's going to send. Maybe this could be captured out of the Faraday gem?
+I'd mock the calls to github and mysql, using rspecs expect.to_have_received.with.
+I'd also set up a CI environment where I could run an automated end-to-end test to confirm the web page is displayed as expected.
