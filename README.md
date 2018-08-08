@@ -12,7 +12,9 @@
   
 *fetch projects*
 
-  `GITHUB_API_TOKEN=<your token> rake github:fetch`
+  Using basic authentication:
+
+  `GITHUB_USERNAME=<your username> GITHUB_API_TOKEN=<your token> rake github:fetch`
   
 *start app*
 
@@ -37,9 +39,8 @@ I like that any Rails developer will be familiar with the rake tasks for databas
 ### Interesting bits of code
 
 The most interesting code is the task for fetching the github repos, in lib/tasks/github.rake.
-I'm using the octokit gem. I ran into some interesting challenges around the query syntax and pagination.
-The filter for number of stars does seem to work as advertised - I am still getting repos with > 2000 stars .
-Also, pagination seems to stop after the first page.
+I'm using Net:Http with basic authentication.
+Pagination is not currently supported.
 
 The SQL query in app/models/star_group.rb was the best way I could think of the segment the projects into increments
 of 200 stars.
@@ -55,7 +56,7 @@ Since that data doesn't change, there's no need to re-run the query.
 
 I'm not a fan of the tests created by the Rails generators, because they're mostly just testing Rails.
 Unit tests should interact with external services as little as possible.
-I would focus on the key behaviors, in this case generating the github API query, saving projects to the DB, and generating the query for display.
+I would focus on the key behaviors, e.g. generating Github API queries, saving projects to the DB, and generating the SQL query for display.
 It would take some digging to see if the octokit API provides some way to get the query it's going to send. Maybe this could be captured out of the Faraday gem?
-I'd mock the calls to github and mysql, using rspecs expect.to_have_received.with.
+I'd mock the calls to github and mysql, using rspec's `expect.to_have_received.with`.
 I'd also set up a CI environment where I could run an automated end-to-end test to confirm the web page is displayed as expected.
