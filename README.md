@@ -1,4 +1,11 @@
-# adwerx_coding_exercise
+# ruby_coding_exercise
+This is my solution for a coding assessment for Adwerx in Durham.
+
+It was completed Aug. 5-8 2018.
+
+Instructions for the assessment can be found [here](https://gist.github.com/remmons/b183ee0c5f9e70b80d1d08e8f6601f95).
+
+The task was to generate a web page that displays open source projects on github that meet a specific set of criteria.
 
 ## To run the code
 *install dependencies*
